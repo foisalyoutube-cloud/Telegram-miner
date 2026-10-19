@@ -1,0 +1,6 @@
+{
+  "name": "MRG Miner",
+  "description": "Telegram Mini App cloud miner with daily check-ins, tasks, store upgrades, referral squad, and crypto wallet.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
