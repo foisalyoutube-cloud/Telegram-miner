@@ -1908,12 +1908,7 @@
 
   <!-- Top Telegram Bar -->
   <div class="tg-topbar">
-    <div class="tg-close-btn" onclick="handleTgClose()">
-      <span>✕</span>
-      <span>Close</span>
-    </div>
-
-    <div class="tg-top-pills">
+    <div class="tg-top-pills" style="margin-left: 0; width: 100%; justify-content: space-between;">
       <div class="user-avatar-small" title="GW Foisal">GW</div>
       <div class="balance-capsule" onclick="openDepositModal()">
         <img class="coin-icon token-logo-img" src="data:image/jpeg;base64,__COIN_B64__" alt="Coin">
@@ -1925,11 +1920,6 @@
         <span class="bolt">⚡</span>
         <span id="topbarLevelSpan">Level 1</span>
       </div>
-    </div>
-
-    <div class="tg-right-actions">
-      <span onclick="toggleLanguage()">⌵</span>
-      <span onclick="openAdminMenu()">⋮</span>
     </div>
   </div>
 
@@ -2184,7 +2174,7 @@
               <span class="badge-chip nft" id="profileNftBadge">💎 Non-NFT Holder</span>
               <span class="badge-chip verified" id="profileTgVerifiedBadge">✈️ Telegram Verified</span>
               <span class="badge-chip" id="profileRoleBadge" style="display: none; font-size: 11px;">👑 VIP</span>
-              <span class="badge-chip" onclick="openAdminPanel()" style="background: rgba(244, 182, 56, 0.18); color: var(--accent-gold); border: 1px solid rgba(244, 182, 56, 0.4); cursor: pointer; font-weight: 800;">⚙️ Admin Panel</span>
+              <span class="badge-chip" id="adminPanelBadge" style="display: none; background: rgba(244, 182, 56, 0.18); color: var(--accent-gold); border: 1px solid rgba(244, 182, 56, 0.4); cursor: pointer; font-weight: 800;" onclick="openAdminPanel()">⚙️ Admin Panel</span>
             </div>
             <div class="user-profile-bio" id="userProfileBio" style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">💎 Pro Miner | Influencer</div>
           </div>
@@ -2340,7 +2330,7 @@
           <div class="miner-stat-val" style="color: #fff;" id="walletTotalHolding">0.00 <span class="token-sym">MRG</span></div>
         </div>
 
-        <div class="wallet-info-row" style="cursor: pointer;" onclick="toggleDisconnectWallet()">
+        <div class="wallet-info-row" style="cursor: pointer;" onclick="openTonConnectModal()">
           <div class="wallet-info-left">
             <div class="wallet-icon-box red">🚪</div>
             <div>
@@ -2536,6 +2526,10 @@
               <div>
                 <label class="admin-label" style="display: block; margin-bottom: 4px;">Referral Bonus</label>
                 <input type="number" class="modal-input" id="cfgRefReward" placeholder="Tokens" value="100">
+              </div>
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 4px;">Invite Link</label>
+                <input type="text" class="modal-input" id="cfgInviteLink" placeholder="t.me/your_bot" value="t.me/your_bot">
               </div>
               <div>
                 <label class="admin-label" style="display: block; margin-bottom: 4px;">Squad Commission %</label>
@@ -3641,6 +3635,31 @@
   </div>
 
   
+  
+  <!-- TON Connect UI Modal (Simulated) -->
+  <div class="modal-backdrop" id="tonConnectModal">
+    <div class="modal-sheet" style="max-width: 400px; background: #111a28; border: 1px solid #23344d; border-radius: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="font-size: 18px; font-weight: bold; color: #fff;">Connect your TON wallet</div>
+        <div style="cursor: pointer; font-size: 20px; color: var(--text-muted);" onclick="closeTonConnectModal()">✕</div>
+      </div>
+      <div style="color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Use Wallet in Telegram or choose other application</div>
+      
+      <button class="modal-btn-confirm" style="background: #0098ea; padding: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span>Connect Wallet in Telegram</span> ✈️
+      </button>
+      
+      <div style="color: var(--text-gray); font-size: 13px; margin-bottom: 12px; text-align: center;">Choose other application</div>
+      
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+        <div style="text-align: center;"><div style="background: #152238; padding: 10px; border-radius: 12px;">💎</div><div style="font-size: 10px; color: #fff; margin-top: 4px;">Keeper</div></div>
+        <div style="text-align: center;"><div style="background: #152238; padding: 10px; border-radius: 12px;">✈️</div><div style="font-size: 10px; color: #fff; margin-top: 4px;">Telegram</div></div>
+        <div style="text-align: center;"><div style="background: #152238; padding: 10px; border-radius: 12px;">💠</div><div style="font-size: 10px; color: #fff; margin-top: 4px;">Gram</div></div>
+        <div style="text-align: center;"><div style="background: #152238; padding: 10px; border-radius: 12px;">🌐</div><div style="font-size: 10px; color: #fff; margin-top: 4px;">All</div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Clean All App Data Confirmation Modal -->
   <div class="modal-backdrop" id="cleanDataModal">
     <div class="modal-sheet" style="text-align: center; max-width: 440px; border-radius: 28px 28px 0 0; background: #131c2b; border: 1px solid rgba(255, 75, 75, 0.3);">
@@ -4206,7 +4225,7 @@
 
     function liveUpdateUserField(field, val) {
       userControls[field] = val;
-      applyUserControls();
+      applyUserControls(); checkAndShowAdminButton();
       renderMinerLevelsGrid();
       updateMascotGlowIntensity();
     }
@@ -5100,7 +5119,7 @@
 
     
     // Render Miner Levels Grid supporting 1000+ levels dynamically
-    let minerLevelPageStart = 1;
+    window.window.minerLevelPageStart = 1;
 
     function renderMinerLevelsGrid() {
       const grid = document.getElementById('minerLevelsGrid');
@@ -5109,8 +5128,8 @@
       const currentLvl = (typeof userControls !== 'undefined' && userControls.minerLevel) ? parseInt(userControls.minerLevel) : 1;
       
       // Ensure page start includes current level
-      if (currentLvl > minerLevelPageStart + 5 || currentLvl < minerLevelPageStart) {
-        minerLevelPageStart = Math.max(1, Math.floor((currentLvl - 1) / 6) * 6 + 1);
+      if (currentLvl > window.minerLevelPageStart + 5 || currentLvl < window.minerLevelPageStart) {
+        window.minerLevelPageStart = Math.max(1, Math.floor((currentLvl - 1) / 6) * 6 + 1);
       }
 
       const maxLevel = 1050; // Support 1000+ levels!
@@ -5118,9 +5137,9 @@
       const titles = ['Rookie Digger', 'Apprentice Digger', 'Skilled Miner', 'Expert Excavator', 'Master Prospector', 'Elite Tycoon', 'Quantum Rig Master', 'Galactic Mining King', 'Titanium Legend', 'Cosmic Overlord'];
 
       let cardsHtml = '';
-      const endLvl = Math.min(maxLevel, minerLevelPageStart + 5);
+      const endLvl = Math.min(maxLevel, window.minerLevelPageStart + 5);
 
-      for (let lvl = minerLevelPageStart; lvl <= endLvl; lvl++) {
+      for (let lvl = window.minerLevelPageStart; lvl <= endLvl; lvl++) {
         const isUnlocked = currentLvl >= lvl;
         const tierIdx = Math.floor((lvl - 1) / 100) % emojis.length;
         const emoji = emojis[(lvl - 1) % emojis.length];
@@ -5149,9 +5168,9 @@
       // Pagination controls for 1000+ levels
       const paginationHtml = `
         <div style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center; background: #131d2d; padding: 10px 14px; border-radius: 14px; border: 1px solid #233852; margin-top: 6px;">
-          <button class="admin-btn" style="padding: 6px 12px; font-size: 12px; background: #192a3e;" onclick="soundTap(); minerLevelPageStart = Math.max(1, minerLevelPageStart - 6); renderMinerLevelsGrid();">◀ Prev Rigs</button>
-          <span style="font-size: 12px; color: var(--text-gray);">Showing Lv ${minerLevelPageStart} - ${endLvl} (Max 1050+)</span>
-          <button class="admin-btn" style="padding: 6px 12px; font-size: 12px; background: #192a3e;" onclick="soundTap(); minerLevelPageStart = Math.min(1045, minerLevelPageStart + 6); renderMinerLevelsGrid();">Next Rigs ▶</button>
+          <button class="admin-btn" style="padding: 6px 12px; font-size: 12px; background: #192a3e;" onclick="soundTap(); window.minerLevelPageStart = Math.max(1, window.minerLevelPageStart - 6); renderMinerLevelsGrid();">◀ Prev Rigs</button>
+          <span style="font-size: 12px; color: var(--text-gray);">Showing Lv ${window.minerLevelPageStart} - ${endLvl} (Max 1050+)</span>
+          <button class="admin-btn" style="padding: 6px 12px; font-size: 12px; background: #192a3e;" onclick="soundTap(); window.minerLevelPageStart = Math.min(1045, window.minerLevelPageStart + 6); renderMinerLevelsGrid();">Next Rigs ▶</button>
         </div>
       `;
 
@@ -5547,6 +5566,17 @@
       } catch (e) {}
     }
 
+    
+    function checkAndShowAdminButton() {
+      const adminBadge = document.getElementById('adminPanelBadge');
+      if (!adminBadge) return;
+      // Replace 'YourHandle' with your actual Telegram handle
+      const adminHandle = '@GwFoisal'; 
+      if (userControls.userHandle === adminHandle) {
+        adminBadge.style.display = 'inline-block';
+      }
+    }
+
     function openAdminPanel() {
       soundTap();
       showAdminPinModal();
@@ -5786,6 +5816,17 @@
       const modal = document.getElementById('depositModal');
       if (modal) modal.classList.add('show');
     }
+    
+    function openTonConnectModal() {
+      soundTap();
+      const modal = document.getElementById('tonConnectModal');
+      if (modal) modal.classList.add('show');
+    }
+    function closeTonConnectModal() {
+      const modal = document.getElementById('tonConnectModal');
+      if (modal) modal.classList.remove('show');
+    }
+
     function closeDepositModal() {
       const modal = document.getElementById('depositModal');
       if (modal) modal.classList.remove('show');
@@ -7180,6 +7221,17 @@
       soundTap();
       document.getElementById('buyModal').classList.add('show');
     }
+    
+    function openTonConnectModal() {
+      soundTap();
+      const modal = document.getElementById('tonConnectModal');
+      if (modal) modal.classList.add('show');
+    }
+    function closeTonConnectModal() {
+      const modal = document.getElementById('tonConnectModal');
+      if (modal) modal.classList.remove('show');
+    }
+
     function closeDepositModal() {
       document.getElementById('buyModal').classList.remove('show');
     }
