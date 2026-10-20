@@ -3147,25 +3147,26 @@
       <div class="admin-tab-section" id="admin-sec-deposits">
         <div class="admin-card">
           <div class="admin-card-title">
-            <span>💼 Deposit Rules &amp; Bonus Configuration</span>
+            <span>💼 Multi-Crypto Deposit Addresses &amp; Rules</span>
             <span class="badge-chip verified" id="adminDepositStatusBadge">🟢 Active</span>
           </div>
           <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
-            Manage deposit gateway status, minimum deposit amounts, and automatic deposit bonus percentages. Changes apply instantly.
+            Configure official deposit addresses for TON, USDT (TRC20/TON), BTC, and ETH. Users will copy these addresses to deposit from Binance, Bitget, Tonkeeper, etc.
           </p>
           <div style="display: flex; flex-direction: column; gap: 12px;">
             <div style="background: #0d1522; border-radius: 12px; padding: 12px; border: 1px solid #1c2b42; display: flex; align-items: center; justify-content: space-between;">
               <div>
                 <strong style="color: #fff; font-size: 13px; display: block;">Deposit Gateway Status</strong>
-                <span style="font-size: 11px; color: var(--text-muted);" id="adminDepositStatusDesc">Users can deposit TON / USDT to receive MRG.</span>
+                <span style="font-size: 11px; color: var(--text-muted);" id="adminDepositStatusDesc">Users can deposit various cryptocurrencies.</span>
               </div>
               <button class="admin-btn green" id="btnToggleDepositStatus" style="padding: 6px 14px; font-size: 12px;" onclick="adminToggleDepositStatus()">
                 Enabled
               </button>
             </div>
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               <div>
-                <label class="admin-label" style="display: block; margin-bottom: 4px;">Min Deposit (TON)</label>
+                <label class="admin-label" style="display: block; margin-bottom: 4px;">Min Deposit (TON/Equiv)</label>
                 <input type="number" step="0.1" class="modal-input" id="adminCfgMinDeposit" value="1.0">
               </div>
               <div>
@@ -3173,8 +3174,33 @@
                 <input type="number" step="1" class="modal-input" id="adminCfgDepositBonus" value="10">
               </div>
             </div>
-            <button class="admin-btn green" style="padding: 12px; font-size: 14px;" onclick="adminSaveDepositRules()">
-              💾 Save &amp; Apply Deposit Rules
+
+            <!-- Crypto Deposit Addresses Inputs -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 2px;">TON Deposit Address (Tonkeeper / Telegram)</label>
+                <input type="text" class="modal-input" id="adminCfgAddrTON" placeholder="UQ...">
+              </div>
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 2px;">USDT (TRC20) Address (Binance / Bitget)</label>
+                <input type="text" class="modal-input" id="adminCfgAddrUSDT_TRC" placeholder="T...">
+              </div>
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 2px;">USDT (TON) Address</label>
+                <input type="text" class="modal-input" id="adminCfgAddrUSDT_TON" placeholder="UQ...">
+              </div>
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 2px;">Bitcoin (BTC) Address</label>
+                <input type="text" class="modal-input" id="adminCfgAddrBTC" placeholder="bc1...">
+              </div>
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 2px;">Ethereum (ETH) Address</label>
+                <input type="text" class="modal-input" id="adminCfgAddrETH" placeholder="0x...">
+              </div>
+            </div>
+
+            <button class="admin-btn green" style="padding: 12px; font-size: 14px; margin-top: 6px;" onclick="adminSaveDepositRules()">
+              💾 Save &amp; Apply Deposit Addresses &amp; Rules
             </button>
           </div>
         </div>
@@ -3553,7 +3579,7 @@
     </div>
   </div>
 
-  <!-- Deposit Modal with Address & Tx Hash Input -->
+  <!-- Multi-Crypto Deposit Modal -->
   <div class="modal-backdrop" id="depositModal">
     <div class="modal-sheet" style="max-width: 440px; border-radius: 28px 28px 0 0; background: #111a28; border: 1px solid rgba(0, 152, 234, 0.3);">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
@@ -3562,36 +3588,51 @@
             📥
           </div>
           <div>
-            <div class="modal-title" style="margin-bottom: 2px;">Deposit TON / USDT</div>
-            <div style="font-size: 12px; color: var(--text-muted);">Get <span class="token-sym">MRG</span> instantly</div>
+            <div class="modal-title" style="margin-bottom: 2px;">Deposit Crypto</div>
+            <div style="font-size: 12px; color: var(--text-muted);">From Binance, Bitget, Tonkeeper &amp; More</div>
           </div>
         </div>
         <span class="badge-chip verified" style="font-size: 11px;">🟢 Secure Vault</span>
       </div>
 
-      <!-- Official Deposit Address Box -->
+      <!-- Select Cryptocurrency -->
+      <div style="margin-bottom: 10px;">
+        <label class="admin-label" style="font-size: 12px; display: block; margin-bottom: 4px;">Select Cryptocurrency / Network</label>
+        <select class="modal-input" id="depositCryptoSelect" style="cursor: pointer;" onchange="onDepositCryptoChange()">
+          <option value="TON">TON (The Open Network / Tonkeeper)</option>
+          <option value="USDT (TRC20)">USDT (TRC20 - Binance / Bitget)</option>
+          <option value="USDT (TON)">USDT (TON Network)</option>
+          <option value="BTC">Bitcoin (BTC)</option>
+          <option value="ETH">Ethereum (ETH)</option>
+        </select>
+      </div>
+
+      <!-- Official Deposit Address Box (Dynamic) -->
       <div style="background: #0d1522; border-radius: 14px; padding: 12px; margin-bottom: 12px; border: 1px solid #1a283e;">
-        <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 4px;">Send TON/USDT to Official Deposit Address:</div>
+        <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 4px;">Copy Official Deposit Address for Selected Network:</div>
         <div style="display: flex; align-items: center; justify-content: space-between; background: #152238; padding: 8px 10px; border-radius: 8px; border: 1px solid #233650;">
-          <span id="appDepositAddressText" style="font-family: monospace; font-size: 11px; color: #8ecbff;">UQBFoMy-deRHYz842P99910_MRG_VAULT</span>
-          <button style="background: #0098ea; border: none; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: 700;" onclick="copyDepositAddress()">Copy</button>
+          <span id="appDepositAddressText" style="font-family: monospace; font-size: 11px; color: #8ecbff; word-break: break-all; margin-right: 6px;">UQBFoMy-deRHYz842P39910_TON_VAULT</span>
+          <button style="background: #0098ea; border: none; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: 700; flex-shrink: 0;" onclick="copyDepositAddress()">Copy</button>
+        </div>
+        <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px;" id="depositNetworkHint">
+          💡 Send only TON from Tonkeeper, Telegram Wallet, or exchanges.
         </div>
       </div>
 
       <!-- Deposit Amount Input -->
       <div style="margin-bottom: 10px;">
-        <label class="admin-label" style="font-size: 12px; display: block; margin-bottom: 4px;">Deposit Amount (TON)</label>
-        <input type="number" step="any" class="modal-input" id="depositAmount" placeholder="5.0" value="5.0" style="font-size: 16px; font-weight: 700;">
+        <label class="admin-label" style="font-size: 12px; display: block; margin-bottom: 4px;">Deposit Amount</label>
+        <input type="number" step="any" class="modal-input" id="depositAmount" placeholder="10.0" value="10.0" style="font-size: 16px; font-weight: 700;">
       </div>
 
       <!-- User Sender Wallet / Tx Hash Address Input -->
       <div style="margin-bottom: 14px;">
-        <label class="admin-label" style="font-size: 12px; display: block; margin-bottom: 4px;">Your Sender Wallet Address / Tx Hash</label>
-        <input type="text" class="modal-input" id="depositSenderAddress" placeholder="Enter your TON Address (UQ... / EQ...) or TxID" value="">
+        <label class="admin-label" style="font-size: 12px; display: block; margin-bottom: 4px;">Your Sender Address / Transaction Hash (TxID)</label>
+        <input type="text" class="modal-input" id="depositSenderAddress" placeholder="Enter TxHash or your external wallet address" value="">
       </div>
 
       <button class="modal-btn-confirm" onclick="executeDeposit()" style="padding: 14px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #0098ea, #0070bb); box-shadow: 0 4px 18px rgba(0, 152, 234, 0.4);">
-        🚀 Confirm &amp; Submit Deposit
+        🚀 Confirm &amp; Submit Deposit Request
       </button>
       <button class="modal-btn-confirm" style="background: transparent; color: var(--text-muted); margin-top: 8px; border: 1px solid #1c2b42;" onclick="closeDepositModal()">
         Cancel
@@ -4529,6 +4570,13 @@
         processingTime: '~5 - 15 Mins',
         enabled: true,
         notice: 'Direct TON mempool transfer to your connected TON wallet.'
+      },
+      depositAddresses: {
+        TON: 'UQBFoMy-deRHYz842P39910y-TON_VAULT',
+        'USDT (TRC20)': 'TRC20_Official_Deposit_Wallet_Address_91823',
+        'USDT (TON)': 'UQ_USDT_TON_Vault_Address_48192',
+        BTC: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        ETH: '0x71C...91822_ETH_Vault'
       }
     };
 
@@ -5742,6 +5790,116 @@
       const modal = document.getElementById('depositModal');
       if (modal) modal.classList.remove('show');
     }
+    
+    function getDepositAddresses() {
+      if (!appConfig.depositAddresses) {
+        appConfig.depositAddresses = {
+          TON: 'UQBFoMy-deRHYz842P39910y-TON_VAULT',
+          'USDT (TRC20)': 'TRC20_Official_Deposit_Wallet_Address_91823',
+          'USDT (TON)': 'UQ_USDT_TON_Vault_Address_48192',
+          BTC: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+          ETH: '0x71C...91822_ETH_Vault'
+        };
+      }
+      return appConfig.depositAddresses;
+    }
+
+    function applyDepositRulesToUI() {
+      const badge = document.getElementById('adminDepositStatusBadge');
+      const toggleBtn = document.getElementById('btnToggleDepositStatus');
+      const minInp = document.getElementById('adminCfgMinDeposit');
+      const bonusInp = document.getElementById('adminCfgDepositBonus');
+
+      if (minInp && document.activeElement !== minInp) minInp.value = depositRules.minDeposit;
+      if (bonusInp && document.activeElement !== bonusInp) bonusInp.value = depositRules.bonusPercent;
+
+      const addrs = getDepositAddresses();
+      const inpO1 = document.getElementById('adminCfgAddrTON');
+      if (inpO1 && document.activeElement !== inpO1) inpO1.value = addrs.TON || '';
+      const inpO2 = document.getElementById('adminCfgAddrUSDT_TRC');
+      if (inpO2 && document.activeElement !== inpO2) inpO2.value = addrs['USDT (TRC20)'] || '';
+      const inpO3 = document.getElementById('adminCfgAddrUSDT_TON');
+      if (inpO3 && document.activeElement !== inpO3) inpO3.value = addrs['USDT (TON)'] || '';
+      const inpO4 = document.getElementById('adminCfgAddrBTC');
+      if (inpO4 && document.activeElement !== inpO4) inpO4.value = addrs.BTC || '';
+      const inpO5 = document.getElementById('adminCfgAddrETH');
+      if (inpO5 && document.activeElement !== inpO5) inpO5.value = addrs.ETH || '';
+
+      if (badge && toggleBtn) {
+        if (depositRules.enabled) {
+          badge.innerText = '🟢 Active';
+          badge.className = 'badge-chip verified';
+          toggleBtn.innerText = 'Enabled';
+          toggleBtn.className = 'admin-btn green';
+        } else {
+          badge.innerText = '🔴 Paused';
+          badge.className = 'badge-chip';
+          badge.style.background = 'rgba(255, 75, 75, 0.2)';
+          badge.style.color = '#ff6b6b';
+          toggleBtn.innerText = 'Disabled';
+          toggleBtn.className = 'admin-btn red';
+        }
+      }
+      renderAdminDeposits();
+    }
+
+    function adminSaveDepositRules() {
+      soundSuccess();
+      depositRules.minDeposit = parseFloat(document.getElementById('adminCfgMinDeposit').value) || 1.0;
+      depositRules.bonusPercent = parseFloat(document.getElementById('adminCfgDepositBonus').value) || 10;
+
+      const addrs = getDepositAddresses();
+      addrs.TON = (document.getElementById('adminCfgAddrTON').value || '').trim() || addrs.TON;
+      addrs['USDT (TRC20)'] = (document.getElementById('adminCfgAddrUSDT_TRC').value || '').trim() || addrs['USDT (TRC20)'];
+      addrs['USDT (TON)'] = (document.getElementById('adminCfgAddrUSDT_TON').value || '').trim() || addrs['USDT (TON)'];
+      addrs.BTC = (document.getElementById('adminCfgAddrBTC').value || '').trim() || addrs.BTC;
+      addrs.ETH = (document.getElementById('adminCfgAddrETH').value || '').trim() || addrs.ETH;
+
+      try {
+        localStorage.setItem('mrg_app_config', JSON.stringify(appConfig));
+      } catch (e) {}
+
+      saveAdminDepositsState();
+      applyDepositRulesToUI();
+      showToast('✅ Multi-crypto deposit addresses & rules saved successfully!');
+    }
+
+    function onDepositCryptoChange() {
+      soundTap();
+      const sel = document.getElementById('depositCryptoSelect');
+      const addrSpan = document.getElementById('appDepositAddressText');
+      const hint = document.getElementById('depositNetworkHint');
+      if (!sel || !addrSpan) return;
+
+      const crypto = sel.value;
+      const addrs = getDepositAddresses();
+      const addr = addrs[crypto] || 'UQ_DEFAULT_VAULT_ADDRESS';
+      addrSpan.innerText = addr;
+
+      if (crypto === 'TON') {
+        hint.innerText = '💡 Send only TON from Tonkeeper, Telegram Wallet, or exchanges.';
+      } else if (crypto === 'USDT (TRC20)') {
+        hint.innerText = '💡 Send only USDT via Tron (TRC20) from Binance, Bitget, etc.';
+      } else if (crypto === 'USDT (TON)') {
+        hint.innerText = '💡 Send only USDT via TON network from Tonkeeper or supported wallets.';
+      } else if (crypto === 'BTC') {
+        hint.innerText = '💡 Send only Bitcoin (BTC) to this address.';
+      } else if (crypto === 'ETH') {
+        hint.innerText = '💡 Send only Ethereum (ETH) or ERC-20 tokens.';
+      }
+    }
+
+    function copyDepositAddress() {
+      soundTap();
+      const addrSpan = document.getElementById('appDepositAddressText');
+      if (!addrSpan) return;
+      const addr = addrSpan.innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(addr);
+      }
+      showToast('✓ Deposit address copied to clipboard!');
+    }
+
     function copyDepositAddress() {
       soundTap();
       const addr = 'UQBFoMy-deRHYz842P99910_MRG_VAULT';
