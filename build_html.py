@@ -18,7 +18,11 @@ template = template.replace('__FLAME_B64__', flame_b64)
 with open('app/src/main/assets/index.html', 'w', encoding='utf-8') as f:
     f.write(template)
 
+with open('index.html', 'w', encoding='utf-8') as f:
+    f.write(template)
+
 with open('telegram_miner_bot.html', 'w', encoding='utf-8') as f:
     f.write(template)
 
 print("Generated HTML successfully! File size:", len(template))
+

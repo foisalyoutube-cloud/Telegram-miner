@@ -1807,6 +1807,100 @@
       100% { opacity: 0; transform: translate(-50%, -200%) scale(1.4); }
     }
 
+  
+    /* Dynamic Mascot Glow Pulse Animation based on speed */
+    @keyframes mascotGlowPulse {
+      0% { filter: drop-shadow(0 0 10px rgba(0, 152, 234, 0.4)); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 24px rgba(244, 182, 56, 0.8)) drop-shadow(0 0 12px rgba(0, 152, 234, 0.6)); transform: scale(1.03); }
+      100% { filter: drop-shadow(0 0 10px rgba(0, 152, 234, 0.4)); transform: scale(1); }
+    }
+    .mascot-coin {
+      animation: mascotGlowPulse 3s infinite ease-in-out;
+    }
+    
+    /* Miner Level Card Styles */
+    .miner-level-card {
+      background: linear-gradient(135deg, #131d2d, #0d1522);
+      border: 1.5px solid #243854;
+      border-radius: 20px;
+      padding: 12px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+    .miner-level-card.unlocked {
+      border-color: rgba(244, 182, 56, 0.5);
+      background: linear-gradient(135deg, #18253a, #0f1826);
+      box-shadow: 0 6px 20px rgba(244, 182, 56, 0.15);
+    }
+    .miner-card-lvl-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #090e17;
+      border: 1px solid #233650;
+      color: var(--accent-gold);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 10px;
+    }
+    .miner-card-star {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 14px;
+    }
+    .miner-card-img-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(0, 152, 234, 0.12);
+      border: 1px solid rgba(0, 152, 234, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 18px 0 8px 0;
+      font-size: 32px;
+    }
+    .miner-card-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .miner-card-stats {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-gray);
+      margin-bottom: 10px;
+      background: rgba(0,0,0,0.25);
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+    .miner-card-btn {
+      width: 100%;
+      background: rgba(0, 201, 128, 0.15);
+      border: 1px solid rgba(0, 201, 128, 0.4);
+      color: #00c980;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .miner-card-btn.locked {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.1);
+      color: var(--text-muted);
+    }
+
   </style>
 
 </head>
@@ -1821,7 +1915,7 @@
 
     <div class="tg-top-pills">
       <div class="user-avatar-small" title="GW Foisal">GW</div>
-      <div class="balance-capsule" onclick="openBuyDEXModal()">
+      <div class="balance-capsule" onclick="openDepositModal()">
         <img class="coin-icon token-logo-img" src="data:image/jpeg;base64,__COIN_B64__" alt="Coin">
         <span class="val" id="topBalance">0.00</span>
         <span class="currency token-sym">MRG</span>
@@ -2044,11 +2138,11 @@
         <div class="action-nav-arrow">›</div>
       </div>
 
-      <div class="action-nav-item" onclick="openBuyDEXModal()">
+      <div class="action-nav-item" onclick="openDepositModal()">
         <div class="action-nav-left">
           <div class="action-nav-icon green">🔗</div>
           <div>
-            <div class="action-nav-text-title">Buy <span class="token-sym">MRG</span> on DEX</div>
+            <div class="action-nav-text-title">Deposit <span class="token-sym">MRG</span> on DEX</div>
             <div class="action-nav-text-sub">Swap GRAM for <span class="token-sym">MRG</span> on STON.fi</div>
           </div>
         </div>
@@ -2061,6 +2155,16 @@
           Your current rig: <strong style="color: var(--accent-blue);" id="minersActiveRigTitle">Level 1 Miner (1.00 MH/s)</strong>.
           Accumulating 0.0000085 MRG/sec. Hold tokens or upgrade to unlock higher miner levels.
         </div>
+      </div>
+
+      <!-- Miner Levels Grid (Matching Screenshot) -->
+      <div class="section-header" style="margin-top: 20px;">
+        <span class="section-title">MINER RIG LEVELS (LV 1 - LV 6+)</span>
+        <span class="section-badge" style="color: var(--accent-gold);">6 Rigs</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;" id="minerLevelsGrid">
+        <!-- Rendered dynamically or static gorgeous cards -->
       </div>
     </div>
 
@@ -2190,9 +2294,9 @@
             <span>↗</span>
             <span>Withdraw</span>
           </button>
-          <button class="btn-buy-mrg" onclick="openBuyDEXModal()">
+          <button class="btn-buy-mrg" onclick="openDepositModal()">
             <span>🔄</span>
-            <span>Buy <span class="token-sym">MRG</span></span>
+            <span>Deposit <span class="token-sym">MRG</span></span>
           </button>
         </div>
 
@@ -2378,6 +2482,7 @@
         <div class="admin-tab-btn" onclick="switchAdminTab('users', this)">User Controls</div>
         <div class="admin-tab-btn" onclick="switchAdminTab('mining', this)">Mining Rates</div>
         <div class="admin-tab-btn" onclick="switchAdminTab('tasks', this)">Tasks &amp; Quests</div>
+        <div class="admin-tab-btn" onclick="switchAdminTab('deposits', this)">💼 Deposits</div>
         <div class="admin-tab-btn" onclick="switchAdminTab('withdrawals', this)">Withdrawals</div>
         <div class="admin-tab-btn" onclick="switchAdminTab('broadcast', this)">Broadcast</div>
       </div>
@@ -3038,6 +3143,53 @@
         </div>
       </div>
 
+            <!-- ADMIN TAB: DEPOSITS CONTROL & QUEUE -->
+      <div class="admin-tab-section" id="admin-sec-deposits">
+        <div class="admin-card">
+          <div class="admin-card-title">
+            <span>💼 Deposit Rules &amp; Bonus Configuration</span>
+            <span class="badge-chip verified" id="adminDepositStatusBadge">🟢 Active</span>
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+            Manage deposit gateway status, minimum deposit amounts, and automatic deposit bonus percentages. Changes apply instantly.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="background: #0d1522; border-radius: 12px; padding: 12px; border: 1px solid #1c2b42; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <strong style="color: #fff; font-size: 13px; display: block;">Deposit Gateway Status</strong>
+                <span style="font-size: 11px; color: var(--text-muted);" id="adminDepositStatusDesc">Users can deposit TON / USDT to receive MRG.</span>
+              </div>
+              <button class="admin-btn green" id="btnToggleDepositStatus" style="padding: 6px 14px; font-size: 12px;" onclick="adminToggleDepositStatus()">
+                Enabled
+              </button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 4px;">Min Deposit (TON)</label>
+                <input type="number" step="0.1" class="modal-input" id="adminCfgMinDeposit" value="1.0">
+              </div>
+              <div>
+                <label class="admin-label" style="display: block; margin-bottom: 4px;">Deposit Bonus (%)</label>
+                <input type="number" step="1" class="modal-input" id="adminCfgDepositBonus" value="10">
+              </div>
+            </div>
+            <button class="admin-btn green" style="padding: 12px; font-size: 14px;" onclick="adminSaveDepositRules()">
+              💾 Save &amp; Apply Deposit Rules
+            </button>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-title">
+            <span>📥 Pending Deposit Requests</span>
+            <span class="badge-chip verified" id="adminDepositsQueueBadge">2 Pending</span>
+          </div>
+          <div id="adminDepositsList">
+            <!-- Dynamic pending deposits list -->
+          </div>
+        </div>
+      </div>
+
       <!-- ADMIN TAB 4: WITHDRAWALS QUEUE & RULES -->
       <div class="admin-tab-section" id="admin-sec-withdrawals">
         <!-- Withdrawal Rules Configuration Card -->
@@ -3401,27 +3553,49 @@
     </div>
   </div>
 
-  <!-- Buy MRG DEX Modal -->
-  <div class="modal-backdrop" id="buyModal">
-    <div class="modal-sheet">
-      <div class="modal-title">Buy <span class="token-sym">MRG</span> on STON.fi</div>
-      <div class="modal-desc">Swap GRAM or TON for MRG tokens via the leading decentralized exchange on The Open Network.</div>
-      <div style="background: #101724; border-radius: 14px; padding: 14px; margin-bottom: 16px; border: 1px solid #23344d;">
-        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px;">
-          <span style="color: var(--text-gray);">Pair:</span>
-          <strong style="color: #fff;">MRG / GRAM</strong>
+  <!-- Deposit Modal with Address & Tx Hash Input -->
+  <div class="modal-backdrop" id="depositModal">
+    <div class="modal-sheet" style="max-width: 440px; border-radius: 28px 28px 0 0; background: #111a28; border: 1px solid rgba(0, 152, 234, 0.3);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #0098ea, #0077c2); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; box-shadow: 0 4px 14px rgba(0, 152, 234, 0.4);">
+            📥
+          </div>
+          <div>
+            <div class="modal-title" style="margin-bottom: 2px;">Deposit TON / USDT</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Get <span class="token-sym">MRG</span> instantly</div>
+          </div>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px;">
-          <span style="color: var(--text-gray);">Rate:</span>
-          <strong style="color: var(--accent-green);">1 MRG ≈ 0.00125 TON</strong>
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 14px;">
-          <span style="color: var(--text-gray);">Slippage:</span>
-          <strong style="color: #fff;">0.5%</strong>
+        <span class="badge-chip verified" style="font-size: 11px;">🟢 Secure Vault</span>
+      </div>
+
+      <!-- Official Deposit Address Box -->
+      <div style="background: #0d1522; border-radius: 14px; padding: 12px; margin-bottom: 12px; border: 1px solid #1a283e;">
+        <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 4px;">Send TON/USDT to Official Deposit Address:</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; background: #152238; padding: 8px 10px; border-radius: 8px; border: 1px solid #233650;">
+          <span id="appDepositAddressText" style="font-family: monospace; font-size: 11px; color: #8ecbff;">UQBFoMy-deRHYz842P99910_MRG_VAULT</span>
+          <button style="background: #0098ea; border: none; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: 700;" onclick="copyDepositAddress()">Copy</button>
         </div>
       </div>
-      <button class="modal-btn-confirm" onclick="simulateSwap()">Execute Swap (+50 MRG)</button>
-      <button class="modal-btn-confirm" style="background: transparent; color: var(--text-muted); margin-top: 8px;" onclick="closeBuyModal()">Close</button>
+
+      <!-- Deposit Amount Input -->
+      <div style="margin-bottom: 10px;">
+        <label class="admin-label" style="font-size: 12px; display: block; margin-bottom: 4px;">Deposit Amount (TON)</label>
+        <input type="number" step="any" class="modal-input" id="depositAmount" placeholder="5.0" value="5.0" style="font-size: 16px; font-weight: 700;">
+      </div>
+
+      <!-- User Sender Wallet / Tx Hash Address Input -->
+      <div style="margin-bottom: 14px;">
+        <label class="admin-label" style="font-size: 12px; display: block; margin-bottom: 4px;">Your Sender Wallet Address / Tx Hash</label>
+        <input type="text" class="modal-input" id="depositSenderAddress" placeholder="Enter your TON Address (UQ... / EQ...) or TxID" value="">
+      </div>
+
+      <button class="modal-btn-confirm" onclick="executeDeposit()" style="padding: 14px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #0098ea, #0070bb); box-shadow: 0 4px 18px rgba(0, 152, 234, 0.4);">
+        🚀 Confirm &amp; Submit Deposit
+      </button>
+      <button class="modal-btn-confirm" style="background: transparent; color: var(--text-muted); margin-top: 8px; border: 1px solid #1c2b42;" onclick="closeDepositModal()">
+        Cancel
+      </button>
     </div>
   </div>
 
@@ -3620,7 +3794,35 @@
       } catch (e) {}
     }
 
+    function updateMinerLevelFromBalance() {
+      const bal = parseFloat(state.walletMRG) || 0.0;
+      // Progressive level formula: every 20 MRG increases level by 1
+      const calculatedLvl = Math.max(1, Math.floor(bal / 20) + 1);
+      userControls.minerLevel = calculatedLvl;
+      if (calculatedLvl > (userControls.peakLevel || 1)) {
+        userControls.peakLevel = calculatedLvl;
+      }
+
+      // Level-based reward: Mining speed increases with level!
+      // Level 1 = 1.00 MH/s, Level 2 = 1.25 MH/s, Level 3 = 1.50 MH/s, etc. (or TH/s scaling)
+      const baseSpeedNum = 1.00 + (calculatedLvl - 1) * 0.25;
+      userControls.baseHashrate = `${baseSpeedNum.toFixed(2)} MH/s`;
+      appConfig.baseHashrate = userControls.baseHashrate;
+
+      const currentLevelBase = (calculatedLvl - 1) * 20;
+      const progressIntoLevel = bal - currentLevelBase;
+      const progressPercent = Math.min(100, Math.max(5, (progressIntoLevel / 20) * 100));
+      const remainNeeded = Math.max(0, 20 - progressIntoLevel);
+
+      userControls.levelProgressPercent = progressPercent;
+      userControls.remainToNext = remainNeeded;
+      saveUserControlsToStorage();
+    }
+
     function applyUserControls() {
+      // Update miner level dynamically from balance before rendering
+      updateMinerLevelFromBalance();
+
       // 1. User Identity & Profile (Tab 4 & Topbar)
       const name = userControls.userName || 'Telegram Miner';
       const handle = userControls.userHandle || '@telegram_miner';
@@ -3789,7 +3991,17 @@
       const tabNextLvl = document.getElementById('minersTabNextLevel');
       if (tabNextLvl) tabNextLvl.innerText = `Level ${lvl + 1}`;
       const tabRemain = document.getElementById('minersTabRemain');
-      if (tabRemain) tabRemain.innerHTML = `3.0 <span class="token-sym">${sym}</span> to go`;
+      const remainVal = (typeof userControls.remainToNext !== 'undefined') ? userControls.remainToNext : 3.0;
+      if (tabRemain) tabRemain.innerHTML = `${remainVal.toFixed(1)} <span class="token-sym">${sym}</span> to go`;
+
+      const progressFill = document.getElementById('minersTabProgressFill');
+      const progPct = (typeof userControls.levelProgressPercent !== 'undefined') ? userControls.levelProgressPercent : 20;
+      if (progressFill) progressFill.style.width = `${progPct}%`;
+
+      // Also re-render miner levels grid if present
+      if (typeof renderMinerLevelsGrid === 'function') {
+        renderMinerLevelsGrid();
+      }
       const allTimeMinedEl = document.getElementById('minersAllTimeMinedSub');
       if (allTimeMinedEl) allTimeMinedEl.innerHTML = `All-Time Mined: ${userControls.allTimeMined || '2.3K'} <span class="token-sym">${sym}</span>`;
       const peakSubEl = document.getElementById('minersPeakLevelSub');
@@ -3954,6 +4166,8 @@
     function liveUpdateUserField(field, val) {
       userControls[field] = val;
       applyUserControls();
+      renderMinerLevelsGrid();
+      updateMascotGlowIntensity();
     }
 
     function saveAllUserControls() {
@@ -4836,6 +5050,77 @@
       } catch (e) {}
     }
 
+    
+    // Render Miner Levels Grid supporting 1000+ levels dynamically
+    let minerLevelPageStart = 1;
+
+    function renderMinerLevelsGrid() {
+      const grid = document.getElementById('minerLevelsGrid');
+      if (!grid) return;
+
+      const currentLvl = (typeof userControls !== 'undefined' && userControls.minerLevel) ? parseInt(userControls.minerLevel) : 1;
+      
+      // Ensure page start includes current level
+      if (currentLvl > minerLevelPageStart + 5 || currentLvl < minerLevelPageStart) {
+        minerLevelPageStart = Math.max(1, Math.floor((currentLvl - 1) / 6) * 6 + 1);
+      }
+
+      const maxLevel = 1050; // Support 1000+ levels!
+      const emojis = ['⛏️', '⚒️', '🛠️', '💎', '🪙', '🚀', '⚡', '🔥', '👑', '🌟'];
+      const titles = ['Rookie Digger', 'Apprentice Digger', 'Skilled Miner', 'Expert Excavator', 'Master Prospector', 'Elite Tycoon', 'Quantum Rig Master', 'Galactic Mining King', 'Titanium Legend', 'Cosmic Overlord'];
+
+      let cardsHtml = '';
+      const endLvl = Math.min(maxLevel, minerLevelPageStart + 5);
+
+      for (let lvl = minerLevelPageStart; lvl <= endLvl; lvl++) {
+        const isUnlocked = currentLvl >= lvl;
+        const tierIdx = Math.floor((lvl - 1) / 100) % emojis.length;
+        const emoji = emojis[(lvl - 1) % emojis.length];
+        const titleBase = titles[Math.min(titles.length - 1, Math.floor((lvl - 1) / 50))];
+        const title = `${titleBase} ${lvl}`;
+        const hashrate = (0.20 + (lvl - 1) * 0.05).toFixed(2) + ' TH/s';
+        const earn = (5.0 + (lvl - 1) * 1.25).toFixed(2) + '/d';
+
+        cardsHtml += `
+          <div class="miner-level-card ${isUnlocked ? 'unlocked' : ''}" onclick="soundTap(); showToast('Miner Rig Lv ${lvl}: ${title} (${hashrate})')">
+            <div class="miner-card-lvl-badge">Lv ${lvl}</div>
+            <div class="miner-card-star">${isUnlocked ? '⭐' : '🔒'}</div>
+            <div class="miner-card-img-wrap">${emoji}</div>
+            <div class="miner-card-title">${title}</div>
+            <div class="miner-card-stats">
+              <span>⚡ ${hashrate}</span>
+              <span style="color: var(--accent-gold);">🪙 ${earn}</span>
+            </div>
+            <div class="miner-card-btn ${isUnlocked ? '' : 'locked'}">
+              ${isUnlocked ? '✓ UNLOCKED' : '🔒 Locked'}
+            </div>
+          </div>
+        `;
+      }
+
+      // Pagination controls for 1000+ levels
+      const paginationHtml = `
+        <div style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center; background: #131d2d; padding: 10px 14px; border-radius: 14px; border: 1px solid #233852; margin-top: 6px;">
+          <button class="admin-btn" style="padding: 6px 12px; font-size: 12px; background: #192a3e;" onclick="soundTap(); minerLevelPageStart = Math.max(1, minerLevelPageStart - 6); renderMinerLevelsGrid();">◀ Prev Rigs</button>
+          <span style="font-size: 12px; color: var(--text-gray);">Showing Lv ${minerLevelPageStart} - ${endLvl} (Max 1050+)</span>
+          <button class="admin-btn" style="padding: 6px 12px; font-size: 12px; background: #192a3e;" onclick="soundTap(); minerLevelPageStart = Math.min(1045, minerLevelPageStart + 6); renderMinerLevelsGrid();">Next Rigs ▶</button>
+        </div>
+      `;
+
+      grid.innerHTML = cardsHtml + paginationHtml;
+    }
+
+    // Dynamic glow pulsation intensity based on mining speed
+    function updateMascotGlowIntensity() {
+      const mascot = document.getElementById('mascotCoin');
+      if (!mascot) return;
+      const lvl = (typeof userControls !== 'undefined' && userControls.minerLevel) ? userControls.minerLevel : 1;
+      const speedFactor = Math.max(1, lvl * 0.4);
+      const pulseDuration = Math.max(0.8, 3.0 / speedFactor);
+      mascot.style.animationDuration = `${pulseDuration}s`;
+    }
+
+
     function renderUserTasks() {
       const container = document.getElementById('userTasksList');
       const badge = document.getElementById('userTasksCountBadge');
@@ -4853,6 +5138,7 @@
         else if (task.type === 'boost') icon = '🚀';
 
         let rightBadge = '';
+        let progressPct = task.completed ? 100 : (task.timer ? 50 : 0);
         if (task.completed) {
           rightBadge = `<div class="task-timer-badge" style="color: var(--accent-green); border-color: rgba(0,201,128,0.3);">Completed ✓</div>`;
         } else if (task.timer) {
@@ -4862,15 +5148,27 @@
         }
 
         return `
-          <div class="task-item" style="${task.completed ? 'opacity: 0.6;' : ''}" onclick="executeTaskItem('${task.id}')">
-            <div class="task-left">
-              <div class="task-logo ${logoClass}">${icon}</div>
-              <div>
-                <div class="task-info-title">${task.title}</div>
-                <div class="task-info-reward"><span class="gold">+${task.reward} <span class="token-sym">${appConfig.tokenSymbol}</span></span> · ${task.desc || 'Quest'}</div>
+          <div class="task-item" style="flex-direction: column; align-items: stretch; ${task.completed ? 'opacity: 0.7;' : ''}" onclick="executeTaskItem('${task.id}')">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <div class="task-left">
+                <div class="task-logo ${logoClass}">${icon}</div>
+                <div>
+                  <div class="task-info-title">${task.title}</div>
+                  <div class="task-info-reward"><span class="gold">+${task.reward} <span class="token-sym">${appConfig.tokenSymbol}</span></span> · ${task.desc || 'Quest'}</div>
+                </div>
+              </div>
+              <div>${rightBadge}</div>
+            </div>
+            <!-- Visual Progress Bar beneath each task item -->
+            <div style="margin-top: 10px; width: 100%;">
+              <div style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 4px;">
+                <span>Progress Status</span>
+                <span style="color: ${task.completed ? 'var(--accent-green)' : 'var(--accent-blue)'}; font-weight: 700;">${progressPct}%</span>
+              </div>
+              <div style="width: 100%; height: 6px; background: #162338; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06);">
+                <div style="width: ${progressPct}%; height: 100%; background: ${task.completed ? 'linear-gradient(90deg, #00c980, #00e676)' : 'linear-gradient(90deg, #0098ea, #2997ff)'}; border-radius: 4px; transition: width 0.4s ease;"></div>
               </div>
             </div>
-            <div>${rightBadge}</div>
           </div>
         `;
       }).join('');
@@ -4924,6 +5222,13 @@
       showToast(`Checking task: ${task.title}...`);
       setTimeout(() => {
         soundSuccess();
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+          window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+          window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+        }
+        if (navigator.vibrate) {
+          navigator.vibrate([50, 30, 80]);
+        }
         task.completed = true;
         state.walletMRG = (parseFloat(state.walletMRG) || 0) + task.reward;
         state.topMRG = state.walletMRG;
@@ -4932,6 +5237,7 @@
           userControls.totalHoldings = formatBalanceDisplay(state.walletMRG);
           saveUserControlsToStorage();
         }
+        updateMinerLevelFromBalance();
         updateAllBalanceDisplays(state.walletMRG, task.reward);
         showToast(`✅ Task Completed! +${task.reward} ${appConfig.tokenSymbol} added to Home Balance.`);
         addTransaction({
@@ -5283,6 +5589,223 @@
       }
     }
 
+    
+    // ==========================================
+    // DEPOSIT CONTROL & MANAGEMENT ENGINE
+    // ==========================================
+    let adminDeposits = [
+      { id: 'd1', user: '@cryptokid', amt: 5.0, mrg: 4000.0, time: '15m ago', status: 'Pending' },
+      { id: 'd2', user: '@alex_ton', amt: 10.0, mrg: 8800.0, time: '45m ago', status: 'Pending' }
+    ];
+    let depositRules = {
+      enabled: true,
+      minDeposit: 1.0,
+      bonusPercent: 10
+    };
+
+    try {
+      const savedDep = localStorage.getItem('mrg_admin_deposits');
+      if (savedDep) adminDeposits = JSON.parse(savedDep);
+      const savedDepRules = localStorage.getItem('mrg_deposit_rules');
+      if (savedDepRules) depositRules = JSON.parse(savedDepRules);
+    } catch (e) {}
+
+    function saveAdminDepositsState() {
+      try {
+        localStorage.setItem('mrg_admin_deposits', JSON.stringify(adminDeposits));
+        localStorage.setItem('mrg_deposit_rules', JSON.stringify(depositRules));
+      } catch (e) {}
+    }
+
+    function renderAdminDeposits() {
+      const container = document.getElementById('adminDepositsList');
+      const badge = document.getElementById('adminDepositsQueueBadge');
+      if (!container) return;
+
+      const pending = adminDeposits.filter(d => d.status === 'Pending').length;
+      if (badge) badge.innerText = `${pending} Pending`;
+
+      if (adminDeposits.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 14px;">No pending deposits.</div>';
+        return;
+      }
+
+      const sym = appConfig.tokenSymbol || 'MRG';
+      container.innerHTML = adminDeposits.map(d => {
+        const isPending = d.status === 'Pending';
+        const color = isPending ? 'var(--accent-gold)' : (d.status === 'Approved' ? 'var(--accent-green)' : 'var(--danger-red)');
+        return `
+          <div style="background: #090e17; border-radius: 12px; padding: 12px; margin-bottom: 8px; border: 1px solid #1c2b42;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: #fff; font-size: 14px;">${d.user}</strong>
+              <span style="color: var(--accent-gold); font-weight: 800;">+${d.mrg} ${sym}</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-gray); margin-bottom: 8px;">
+              Deposited: ${d.amt} TON • Status: <span style="color: ${color};">${d.status}</span> (${d.time})
+            </div>
+            ${isPending ? `
+            <div style="display: flex; gap: 8px;">
+              <button class="admin-btn green" style="flex: 1; padding: 6px; font-size: 12px;" onclick="adminApproveDeposit('${d.id}')">✓ Approve &amp; Credit</button>
+              <button class="admin-btn red" style="flex: 1; padding: 6px; font-size: 12px;" onclick="adminRejectDeposit('${d.id}')">✕ Reject</button>
+            </div>` : `
+            <div style="text-align: right; font-size: 11px; color: ${color}; font-weight: 600;">${d.status}</div>`}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function adminToggleDepositStatus() {
+      soundTap();
+      depositRules.enabled = !depositRules.enabled;
+      saveAdminDepositsState();
+      applyDepositRulesToUI();
+      showToast(depositRules.enabled ? '✅ Deposit gateway enabled!' : '⚠️ Deposit gateway paused.');
+    }
+
+    function adminSaveDepositRules() {
+      soundSuccess();
+      depositRules.minDeposit = parseFloat(document.getElementById('adminCfgMinDeposit').value) || 1.0;
+      depositRules.bonusPercent = parseFloat(document.getElementById('adminCfgDepositBonus').value) || 10;
+      saveAdminDepositsState();
+      applyDepositRulesToUI();
+      showToast('✅ Deposit rules saved successfully!');
+    }
+
+    function applyDepositRulesToUI() {
+      const badge = document.getElementById('adminDepositStatusBadge');
+      const toggleBtn = document.getElementById('btnToggleDepositStatus');
+      const minInp = document.getElementById('adminCfgMinDeposit');
+      const bonusInp = document.getElementById('adminCfgDepositBonus');
+
+      if (minInp && document.activeElement !== minInp) minInp.value = depositRules.minDeposit;
+      if (bonusInp && document.activeElement !== bonusInp) bonusInp.value = depositRules.bonusPercent;
+
+      if (badge && toggleBtn) {
+        if (depositRules.enabled) {
+          badge.innerText = '🟢 Active';
+          badge.className = 'badge-chip verified';
+          toggleBtn.innerText = 'Enabled';
+          toggleBtn.className = 'admin-btn green';
+        } else {
+          badge.innerText = '🔴 Paused';
+          badge.className = 'badge-chip';
+          badge.style.background = 'rgba(255, 75, 75, 0.2)';
+          badge.style.color = '#ff6b6b';
+          toggleBtn.innerText = 'Disabled';
+          toggleBtn.className = 'admin-btn red';
+        }
+      }
+      renderAdminDeposits();
+    }
+
+    function adminApproveDeposit(id) {
+      soundSuccess();
+      const item = adminDeposits.find(d => d.id === id);
+      if (item && item.status === 'Pending') {
+        item.status = 'Approved';
+        saveAdminDepositsState();
+        renderAdminDeposits();
+
+        // Credit user wallet balance
+        state.walletMRG = (parseFloat(state.walletMRG) || 0) + item.mrg;
+        state.topMRG = state.walletMRG;
+        if (typeof userControls !== 'undefined') {
+          userControls.walletMRG = state.walletMRG;
+          userControls.totalHoldings = formatBalanceDisplay(state.walletMRG);
+          saveUserControlsToStorage();
+        }
+        updateAllBalanceDisplays(state.walletMRG, item.mrg);
+        saveState();
+
+        const sym = appConfig.tokenSymbol || 'MRG';
+        showToast(`✅ Approved deposit! Credited +${item.mrg} ${sym} to user.`);
+      }
+    }
+
+    function adminRejectDeposit(id) {
+      soundTap();
+      const item = adminDeposits.find(d => d.id === id);
+      if (item && item.status === 'Pending') {
+        item.status = 'Rejected';
+        saveAdminDepositsState();
+        renderAdminDeposits();
+        showToast('Deposit request rejected.');
+      }
+    }
+
+    function openDepositModal() {
+      soundTap();
+      const modal = document.getElementById('depositModal');
+      if (modal) modal.classList.add('show');
+    }
+    function closeDepositModal() {
+      const modal = document.getElementById('depositModal');
+      if (modal) modal.classList.remove('show');
+    }
+    function copyDepositAddress() {
+      soundTap();
+      const addr = 'UQBFoMy-deRHYz842P99910_MRG_VAULT';
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(addr);
+      }
+      showToast('Official Deposit Address copied to clipboard!');
+    }
+
+    function executeDeposit() {
+      const depositAmt = parseFloat(document.getElementById('depositAmount').value) || 0;
+      const senderAddr = (document.getElementById('depositSenderAddress').value || '').trim();
+
+      if (depositAmt <= 0) {
+        soundError();
+        showToast('⚠️ Please enter a valid deposit amount.');
+        return;
+      }
+      if (!senderAddr) {
+        soundError();
+        showToast('⚠️ Please enter your sender wallet address or transaction hash.');
+        document.getElementById('depositSenderAddress').focus();
+        return;
+      }
+
+      soundSuccess();
+      closeDepositModal();
+
+      const rate = 800; // 1 TON = 800 MRG
+      const bonusMultiplier = 1 + ((depositRules && depositRules.bonusPercent ? depositRules.bonusPercent : 10) / 100);
+      const totalCredited = depositAmt * rate * bonusMultiplier;
+
+      // Add to admin deposits queue
+      const newDep = {
+        id: 'd_' + Date.now(),
+        user: (typeof userControls !== 'undefined' && userControls.userHandle) ? userControls.userHandle : '@telegram_miner',
+        amt: depositAmt,
+        mrg: totalCredited,
+        sender: senderAddr,
+        time: 'Just now',
+        status: 'Pending'
+      };
+      if (typeof adminDeposits !== 'undefined') {
+        adminDeposits.unshift(newDep);
+        saveAdminDepositsState();
+        renderAdminDeposits();
+      }
+
+      addTransaction({
+        type: 'deposit',
+        title: 'TON / USDT Deposit',
+        amount: totalCredited,
+        desc: `Sender: ${senderAddr.substring(0, 10)}... • Amt: ${depositAmt} TON (+${depositRules.bonusPercent}% Bonus)`,
+        status: 'Pending Verification',
+        time: 'Just now',
+        txHash: senderAddr
+      });
+      saveState();
+
+      const sym = appConfig.tokenSymbol || 'MRG';
+      showToast(`🚀 Deposit request of ${depositAmt} TON submitted! Pending admin verification for +${totalCredited} ${sym}.`);
+    }
+
+
     function verifyAdminPin() {
       const correctPin = getAdminPin();
       const box = document.getElementById('pinIndicatorsBox');
@@ -5308,6 +5831,8 @@
           closeAdminPinModal();
           document.getElementById('adminViewport').classList.add('active');
           renderAdminWithdrawals();
+      renderAdminDeposits();
+      applyDepositRulesToUI();
           renderAdminTasks();
           updateAdminPinSectionDisplay();
           showToast('🛡️ Welcome Admin! Authorized access granted.');
@@ -5805,6 +6330,7 @@
 
     // SVG Presets (self-contained, ultra-sharp vector graphics)
     const TOKEN_PRESETS = {
+      mining: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="mineGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23FFD700"/><stop offset="70%" stop-color="%23FF8C00"/><stop offset="100%" stop-color="%238B4500"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(%23mineGrad)" stroke="%23331C00" stroke-width="3"/><text x="50" y="65" font-size="45" text-anchor="middle">⛏️</text></svg>',
       gold: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="goldGrad" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="%23FFF6A6"/><stop offset="45%" stop-color="%23F5A623"/><stop offset="100%" stop-color="%23B36B00"/></radialGradient><linearGradient id="rimGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23FFE680"/><stop offset="100%" stop-color="%23663C00"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(%23rimGrad)" stroke="%23331C00" stroke-width="2"/><circle cx="50" cy="50" r="42" fill="url(%23goldGrad)"/><circle cx="50" cy="50" r="37" fill="none" stroke="%23FFE885" stroke-dasharray="3,3" stroke-width="1.5"/><text x="50" y="58" font-size="28" font-weight="900" font-family="Arial,sans-serif" fill="%23FFFFFF" text-anchor="middle" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.5))">MRG</text></svg>',
       ton: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="tonGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%232EB5FF"/><stop offset="100%" stop-color="%230072C6"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="%2300182E" stroke="%230098EA" stroke-width="3"/><polygon points="50,15 85,38 72,85 28,85 15,38" fill="url(%23tonGrad)"/><polygon points="50,15 50,85 72,85 85,38" fill="%230086D6"/><polygon points="50,22 75,40 50,75 25,40" fill="%23FFFFFF" opacity="0.3"/><polygon points="50,22 50,75 75,40" fill="%23FFFFFF" opacity="0.45"/><text x="50" y="58" font-size="26" font-weight="bold" font-family="Arial,sans-serif" fill="%23FFFFFF" text-anchor="middle">💎</text></svg>',
       btc: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="%23F7931A" stroke="%23B36200" stroke-width="3"/><circle cx="50" cy="50" r="42" fill="none" stroke="%23FFD085" stroke-width="2"/><text x="50" y="66" font-size="48" font-weight="bold" font-family="Arial,sans-serif" fill="%23FFFFFF" text-anchor="middle">₿</text></svg>',
@@ -6046,6 +6572,7 @@
 
       // Trigger fluid particle animation and update all home & wallet displays
       triggerClaimAnimation(claimed);
+      updateMinerLevelFromBalance();
       updateAllBalanceDisplays(state.walletMRG, claimed);
 
       // Mascot coin celebratory spin burst
@@ -6078,6 +6605,13 @@
         return;
       }
       soundClaim();
+      if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+      }
+      if (navigator.vibrate) {
+        navigator.vibrate([40, 30, 60, 30, 100]);
+      }
       state.streakDay = day;
       const reward = 5 + day;
       state.walletMRG = (parseFloat(state.walletMRG) || 0) + reward;
@@ -6091,6 +6625,7 @@
         saveUserControlsToStorage();
       }
 
+      updateMinerLevelFromBalance();
       updateAllBalanceDisplays(state.walletMRG, reward);
       triggerClaimAnimation(reward);
 
@@ -6432,7 +6967,7 @@
         return;
       }
 
-      // Execution: Deduct and Record
+      // Execution: Deduct, Recalculate Miner Level & Speed, and Record
       soundSuccess();
       state.walletMRG = Math.max(0, bal - totalDeduct);
       state.topMRG = state.walletMRG;
@@ -6440,6 +6975,7 @@
       if (typeof userControls !== 'undefined') {
         userControls.walletMRG = state.walletMRG;
         userControls.totalHoldings = formatBalanceDisplay(state.walletMRG);
+        updateMinerLevelFromBalance(); // Reset/adjust level and mining speed on withdrawal
         saveUserControlsToStorage();
       }
 
@@ -6482,16 +7018,16 @@
       showToast(`🚀 Withdrawal of ${amt} ${sym} submitted to TON mempool! Tx: ${generatedTxId}`);
     }
 
-    function openBuyDEXModal() {
+    function openDepositModal() {
       soundTap();
       document.getElementById('buyModal').classList.add('show');
     }
-    function closeBuyModal() {
+    function closeDepositModal() {
       document.getElementById('buyModal').classList.remove('show');
     }
-    function simulateSwap() {
+    function executeDeposit() {
       soundSuccess();
-      closeBuyModal();
+      closeDepositModal();
       const depositAmt = 50.0;
       state.walletMRG = (parseFloat(state.walletMRG) || 0) + depositAmt;
       state.topMRG = state.walletMRG;
@@ -6500,6 +7036,7 @@
         userControls.totalHoldings = formatBalanceDisplay(state.walletMRG);
         saveUserControlsToStorage();
       }
+      updateMinerLevelFromBalance();
       updateAllBalanceDisplays(state.walletMRG, depositAmt);
       triggerClaimAnimation(depositAmt);
 
