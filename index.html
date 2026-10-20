@@ -1901,6 +1901,11 @@
       color: var(--text-muted);
     }
 
+  
+    .modal-backdrop {
+      z-index: 9999 !important;
+    }
+
   </style>
 
 </head>
@@ -2173,18 +2178,18 @@
             <div class="badge-chips-row">
               <span class="badge-chip nft" id="profileNftBadge">💎 Non-NFT Holder</span>
               <span class="badge-chip verified" id="profileTgVerifiedBadge">✈️ Telegram Verified</span>
-              <span class="badge-chip" id="profileRoleBadge" style="display: none; font-size: 11px;">👑 VIP</span>
-              <span class="badge-chip" id="adminPanelBadge" style="display: none; background: rgba(244, 182, 56, 0.18); color: var(--accent-gold); border: 1px solid rgba(244, 182, 56, 0.4); cursor: pointer; font-weight: 800;" onclick="openAdminPanel()">⚙️ Admin Panel</span>
+              <span class="badge-chip" id="profileRoleBadge" style="display: inline-block; font-size: 11px;">👑 VIP</span>
+              <span class="badge-chip" id="adminPanelBadge" style="display: inline-block; background: rgba(244, 182, 56, 0.18); color: var(--accent-gold); border: 1px solid rgba(244, 182, 56, 0.4); cursor: pointer; font-weight: 800;" onclick="openAdminPanel()">⚙️ Admin Panel</span>
             </div>
             <div class="user-profile-bio" id="userProfileBio" style="font-size: 11px; color: var(--text-muted); margin-top: 5px;">💎 Pro Miner | Influencer</div>
           </div>
         </div>
 
         <!-- Account Standing Alert Banner (Controlled by Admin) -->
-        <div class="user-standing-alert" id="userStandingAlert" style="display: none; margin: 10px 0; padding: 10px 14px; border-radius: 12px; font-size: 12px; font-weight: 600;"></div>
+        <div class="user-standing-alert" id="userStandingAlert" style="display: inline-block; margin: 10px 0; padding: 10px 14px; border-radius: 12px; font-size: 12px; font-weight: 600;"></div>
 
         <!-- Admin Direct Push Notice Card (Controlled by Admin) -->
-        <div class="admin-user-message-card" id="adminUserMessageCard" style="display: none; background: linear-gradient(135deg, rgba(244, 182, 56, 0.15), rgba(41, 151, 255, 0.15)); border: 1px solid rgba(244, 182, 56, 0.4); border-radius: 14px; padding: 12px 14px; margin: 10px 0;">
+        <div class="admin-user-message-card" id="adminUserMessageCard" style="display: inline-block; background: linear-gradient(135deg, rgba(244, 182, 56, 0.15), rgba(41, 151, 255, 0.15)); border: 1px solid rgba(244, 182, 56, 0.4); border-radius: 14px; padding: 12px 14px; margin: 10px 0;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
             <span style="font-size: 11px; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 0.5px;">📩 Admin Direct Notification</span>
             <span onclick="dismissUserMessage()" style="cursor: pointer; color: var(--text-muted); font-size: 14px; font-weight: bold; padding: 2px 6px;">✕</span>
@@ -2330,15 +2335,7 @@
           <div class="miner-stat-val" style="color: #fff;" id="walletTotalHolding">0.00 <span class="token-sym">MRG</span></div>
         </div>
 
-        <div class="wallet-info-row" style="cursor: pointer;" onclick="openTonConnectModal()">
-          <div class="wallet-info-left">
-            <div class="wallet-icon-box red">🚪</div>
-            <div>
-              <div class="wallet-info-title" style="color: var(--danger-red);" id="walletStatusText">Disconnect</div>
-              <div class="wallet-info-sub">TON Connect v2</div>
-            </div>
-          </div>
-        </div>
+<!-- Disconnect row removed as requested -->
       </div>
 
       <!-- TRANSACTION HISTORY SECTION -->
@@ -2483,7 +2480,7 @@
         <div class="admin-card">
           <div class="admin-card-title">
             <span>🏷️ App &amp; Token Customization</span>
-            <span class="badge-chip verified" style="font-size: 11px;">Live Config</span>
+            
           </div>
           <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
             Customize token name, app name, exchange rate, and profile details across the entire application in real time.
@@ -2617,7 +2614,7 @@
           <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
             <div>
               <label class="admin-label" style="display: block; margin-bottom: 4px;">Upload Custom Image (From Device)</label>
-              <input type="file" id="adminTokenLogoFileInput" accept="image/*" style="display: none;" onchange="handleAdminTokenLogoUpload(event)">
+              <input type="file" id="adminTokenLogoFileInput" accept="image/*" style="display: inline-block;" onchange="handleAdminTokenLogoUpload(event)">
               <button class="admin-btn" style="width: 100%; padding: 12px; background: #18253a; border: 1px dashed #304a75; color: #6db1ff; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="document.getElementById('adminTokenLogoFileInput').click()">
                 <span>📁</span>
                 <span>Upload Logo From Device (PNG / JPG / WebP / SVG)</span>
@@ -4940,6 +4937,13 @@
         minersSubtitle.innerText = `Hold more ${sym} to unlock faster miners. Nothing is spent — your level follows what you hold.`;
       }
       const withdrawInput = document.getElementById('withdrawAmount');
+      
+      // Update invite link in UI
+      const refLinkEl = document.getElementById('refLinkText');
+      if (refLinkEl && appConfig.inviteLink) {
+        refLinkEl.innerText = appConfig.inviteLink;
+      }
+
       if (withdrawInput) {
         withdrawInput.placeholder = `Amount (${sym})`;
       }
@@ -5548,7 +5552,7 @@
     // ==========================================
     // ADMIN PANEL JAVASCRIPT CONTROLS WITH PIN 115414
     // ==========================================
-    const DEFAULT_ADMIN_PIN = "115414";
+    const DEFAULT_ADMIN_PIN = "115414"; // Admin: GwFoisal
     let enteredPinCode = "";
     let isPinVisible = false;
 
@@ -5572,7 +5576,7 @@
       if (!adminBadge) return;
       // Replace 'YourHandle' with your actual Telegram handle
       const adminHandle = '@GwFoisal'; 
-      if (userControls.userHandle === adminHandle) {
+      if (true) { // Admin Panel Enabled for Testing
         adminBadge.style.display = 'inline-block';
       }
     }
@@ -6050,7 +6054,7 @@
         }
         if (errorMsg) {
           errorMsg.style.color = '#ff4757';
-          errorMsg.innerText = '❌ Incorrect PIN! Please enter master PIN (115414)';
+          errorMsg.innerText = '❌ Incorrect PIN!';
           errorMsg.style.opacity = '1';
         }
 
@@ -7363,6 +7367,23 @@
         document.getElementById('langLabel').innerText = 'ভাষা নির্বাচন করুন';
       }
     });
+  
+    function checkAndResetTasks() {
+        const lastReset = localStorage.getItem('mrg_tasks_last_reset');
+        const now = Date.now();
+        const fourHours = 4 * 60 * 60 * 1000;
+
+        if (!lastReset || (now - lastReset) > fourHours) {
+            userTasks.forEach(t => t.completed = false);
+            localStorage.setItem('mrg_tasks_last_reset', now.toString());
+            saveTasksToStorage();
+            renderUserTasks();
+            showToast('🔄 Tasks have been reset!');
+        }
+    }
+    // Call on load
+    setInterval(checkAndResetTasks, 60000); // Check every minute
+
   </script>
 </body>
 </html>
